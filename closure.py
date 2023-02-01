@@ -1,4 +1,4 @@
-def findClosure(input_state, dotSymbol):
+def find_closure(input_state, dotSymbol):
     global start_symbol, \
         separatedRulesList, \
         statesDict

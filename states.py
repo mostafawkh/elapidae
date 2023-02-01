@@ -1,4 +1,5 @@
-def createStates(statesDict):
+from goto import goto_handler
+def create_states(statesDict):
     prev_len = -1
     called_GOTO_on = []
  
@@ -12,5 +13,5 @@ def createStates(statesDict):
         for key in keys:
             if key not in called_GOTO_on:
                 called_GOTO_on.append(key)
-                compute_GOTO(key)
+                goto_handler(key)
     return

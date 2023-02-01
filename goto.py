@@ -1,7 +1,7 @@
 import copy
-from closure import findClosure
+from closure import find_closure
 
-def gotoHandler(state):
+def goto_handler(state):
     global statesDict, stateCount
  
     # find all symbols on which we need to
@@ -53,7 +53,7 @@ def goto(state, charNextToDot):
         # check that rule is not "Handle"
         if rule[1][-1] != '.':
             closureRes = \
-                findClosure(newState, rule[1][indexDot + 1])
+                find_closure(newState, rule[1][indexDot + 1])
             for rule in closureRes:
                 if rule not in addClosureRules \
                         and rule not in newState:

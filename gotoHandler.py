@@ -1,4 +1,4 @@
-import goto
+from goto import goto
 def gotoHandler(state):
     global statesDict, stateCount
  

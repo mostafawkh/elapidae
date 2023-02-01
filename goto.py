@@ -1,5 +1,5 @@
 import copy
-import findClosure
+from findClosure import findClosure
 def goto(state, charNextToDot):
     global statesDict, stateCount, stateMap
  

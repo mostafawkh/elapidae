@@ -1,3 +1,4 @@
+import goto
 def gotoHandler(state):
     global statesDict, stateCount
  
@@ -15,5 +16,5 @@ def gotoHandler(state):
     # call GOTO iteratively on all symbols pointed by dot
     if len(generateStatesFor) != 0:
         for symbol in generateStatesFor:
-            GOTO(state, symbol)
+            goto(state, symbol)
     return

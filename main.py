@@ -320,9 +320,7 @@ for y in rules:
 # print processed rules
 print("\nGrammar after Augmentation: \n")
 separatedRulesList = \
-    grammar_expansion(rules,
-                      nonterm_userdef,
-                      start_symbol)
+    grammar_expansion(rules,start_symbol)
 printResult(separatedRulesList)
 
 # find closure

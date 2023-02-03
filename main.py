@@ -167,7 +167,6 @@ def follow(nt):
 
     solset = set()
     if nt == start_symbol:
-        # return '$'
         solset.add('$')
 
     for curNT in diction:
@@ -210,7 +209,7 @@ def follow(nt):
     return list(solset)
 
 
-def createParseTable(statesDict, stateMap, T, NT):
+def generate_parsing_table(statesDict, stateMap, T, NT):
     global separatedRulesList, diction
 
     rows = list(statesDict.keys())
@@ -226,7 +225,6 @@ def createParseTable(statesDict, stateMap, T, NT):
     for entry in stateMap:
         state = entry[0]
         symbol = entry[1]
-        # get index
         a = rows.index(state)
         b = cols.index(symbol)
         if symbol in NT:
@@ -278,7 +276,6 @@ def createParseTable(statesDict, stateMap, T, NT):
                                 Table[stateno][index] =\
                                     Table[stateno][index]+f"R{key} "
 
-    print("\nSLR(1) parsing table:\n")
     frmt = "{:>8}" * len(cols)
     print("  ", frmt.format(*cols), "\n")
     ptr = 0
@@ -290,16 +287,10 @@ def createParseTable(statesDict, stateMap, T, NT):
         j += 1
 
 
-def printResult(rules):
+def print_result(rules):
     for rule in rules:
         print(f"{rule[0]} ->"
               f" {' '.join(rule[1])}")
-
-
-def printAllGOTO(diction):
-    for itr in diction:
-        print(f"GOTO ( I{itr[0]} ,"
-              f" {itr[1]} ) = I{stateMap[itr]}")
 
 
 rules = [
@@ -312,23 +303,13 @@ nonterm_userdef = ['A', 'E', 'T', 'F']
 term_userdef = ['id', 'add', 'mul', '(', ')', 'equ']
 start_symbol = nonterm_userdef[0]
 
-
-print("\nOriginal grammar input:\n")
-for y in rules:
-    print(y)
-
-# print processed rules
-print("\nGrammar after Augmentation: \n")
 separatedRulesList = \
-    grammar_expansion(rules,start_symbol)
-printResult(separatedRulesList)
+    grammar_expansion(rules, start_symbol)
+print_result(separatedRulesList)
 
-# find closure
 start_symbol = separatedRulesList[0][0]
-print("\nCalculated closure: I0\n")
-I0 = findClosure(0, start_symbol)
-printResult(I0)
 
+I0 = findClosure(0, start_symbol)
 
 statesDict = {}
 stateMap = {}
@@ -339,18 +320,27 @@ stateCount = 0
 
 create_states(statesDict)
 
-
-print("\nStates Generated: \n")
-for st in statesDict:
-    print(f"State = I{st}")
-    printResult(statesDict[st])
-    print()
-
-print("Result of GOTO computation:\n")
-printAllGOTO(stateMap)
-
 diction = {}
+userselect = 0
+while userselect != '3':
+    global user_select
+    user_select = input(
+        '---------------------------------\nSelect Mode \n 1.show parsing steps \n 2.show parsing table \n 3.Exit \n\n')
 
-createParseTable(statesDict, stateMap,
-                 term_userdef,
-                 nonterm_userdef)
+    if user_select == '1':
+        print("\nStates: \n")
+        for st in statesDict:
+            print(f"State = I{st}")
+            print_result(statesDict[st])
+            print()
+
+    elif user_select == '2':
+        generate_parsing_table(statesDict, stateMap,
+                         term_userdef,
+                         nonterm_userdef)
+
+    elif user_select == '3':
+        break
+
+    else:
+        raise ('ERROR IN SELECTION')

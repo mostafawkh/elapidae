@@ -2,6 +2,99 @@ import copy
 from grammar import grammar_expansion
 
 
+def first(rule):
+    global rules, nonterm_userdef, \
+        term_userdef, diction, firsts
+
+    if len(rule) != 0 and (rule is not None):
+        if rule[0] in term_userdef:
+            return rule[0]
+        elif rule[0] == '#':
+            return '#'
+
+    if len(rule) != 0:
+        if rule[0] in list(diction.keys()):
+
+            fres = []
+            rhs_rules = diction[rule[0]]
+
+            for itr in rhs_rules:
+                indivRes = first(itr)
+                if type(indivRes) is list:
+                    for i in indivRes:
+                        fres.append(i)
+                else:
+                    fres.append(indivRes)
+
+            if '#' not in fres:
+                return fres
+            else:
+
+                newList = []
+                fres.remove('#')
+                if len(rule) > 1:
+                    ansNew = first(rule[1:])
+                    if ansNew != None:
+                        if type(ansNew) is list:
+                            newList = fres + ansNew
+                        else:
+                            newList = fres + [ansNew]
+                    else:
+                        newList = fres
+                    return newList
+
+                fres.append('#')
+                return fres
+
+
+def follow(nt):
+    global start_symbol, rules, nonterm_userdef, \
+        term_userdef, diction, firsts, follows
+
+    solset = set()
+    if nt == start_symbol:
+        solset.add('$')
+
+    for curNT in diction:
+        rhs = diction[curNT]
+
+        for subrule in rhs:
+            if nt in subrule:
+
+                while nt in subrule:
+                    index_nt = subrule.index(nt)
+                    subrule = subrule[index_nt + 1:]
+
+                    if len(subrule) != 0:
+
+                        res = first(subrule)
+
+                        if '#' in res:
+                            newList = []
+                            res.remove('#')
+                            ansNew = follow(curNT)
+                            if ansNew != None:
+                                if type(ansNew) is list:
+                                    newList = res + ansNew
+                                else:
+                                    newList = res + [ansNew]
+                            else:
+                                newList = res
+                            res = newList
+                    else:
+
+                        if nt != curNT:
+                            res = follow(curNT)
+
+                    if res is not None:
+                        if type(res) is list:
+                            for g in res:
+                                solset.add(g)
+                        else:
+                            solset.add(res)
+    return list(solset)
+
+
 def findClosure(input_state, dotSymbol):
     global start_symbol, \
         separatedRulesList, \
@@ -114,99 +207,6 @@ def create_states(statesDict):
                 called_GOTO_on.append(key)
                 compute_GOTO(key)
     return
-
-
-def first(rule):
-    global rules, nonterm_userdef, \
-        term_userdef, diction, firsts
-
-    if len(rule) != 0 and (rule is not None):
-        if rule[0] in term_userdef:
-            return rule[0]
-        elif rule[0] == '#':
-            return '#'
-
-    if len(rule) != 0:
-        if rule[0] in list(diction.keys()):
-
-            fres = []
-            rhs_rules = diction[rule[0]]
-
-            for itr in rhs_rules:
-                indivRes = first(itr)
-                if type(indivRes) is list:
-                    for i in indivRes:
-                        fres.append(i)
-                else:
-                    fres.append(indivRes)
-
-            if '#' not in fres:
-                return fres
-            else:
-
-                newList = []
-                fres.remove('#')
-                if len(rule) > 1:
-                    ansNew = first(rule[1:])
-                    if ansNew != None:
-                        if type(ansNew) is list:
-                            newList = fres + ansNew
-                        else:
-                            newList = fres + [ansNew]
-                    else:
-                        newList = fres
-                    return newList
-
-                fres.append('#')
-                return fres
-
-
-def follow(nt):
-    global start_symbol, rules, nonterm_userdef, \
-        term_userdef, diction, firsts, follows
-
-    solset = set()
-    if nt == start_symbol:
-        solset.add('$')
-
-    for curNT in diction:
-        rhs = diction[curNT]
-
-        for subrule in rhs:
-            if nt in subrule:
-
-                while nt in subrule:
-                    index_nt = subrule.index(nt)
-                    subrule = subrule[index_nt + 1:]
-
-                    if len(subrule) != 0:
-
-                        res = first(subrule)
-
-                        if '#' in res:
-                            newList = []
-                            res.remove('#')
-                            ansNew = follow(curNT)
-                            if ansNew != None:
-                                if type(ansNew) is list:
-                                    newList = res + ansNew
-                                else:
-                                    newList = res + [ansNew]
-                            else:
-                                newList = res
-                            res = newList
-                    else:
-
-                        if nt != curNT:
-                            res = follow(curNT)
-
-                    if res is not None:
-                        if type(res) is list:
-                            for g in res:
-                                solset.add(g)
-                        else:
-                            solset.add(res)
-    return list(solset)
 
 
 def generate_parsing_table(statesDict, stateMap, T, NT):
@@ -336,8 +336,8 @@ while userselect != '3':
 
     elif user_select == '2':
         generate_parsing_table(statesDict, stateMap,
-                         term_userdef,
-                         nonterm_userdef)
+                               term_userdef,
+                               nonterm_userdef)
 
     elif user_select == '3':
         break
